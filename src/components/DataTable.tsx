@@ -76,7 +76,7 @@ export const DataTable: React.FC<DataTableProps> = ({
   };
   
   return (
-    <Card className="w-full mt-6 glass-card animate-on-load" style={{"--delay": "2"}}>
+    <Card className="w-full mt-6 glass-card animate-on-load" style={{ "--delay": "2" } as React.CSSProperties}>
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between">
           <div>

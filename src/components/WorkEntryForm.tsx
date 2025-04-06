@@ -106,7 +106,7 @@ export const WorkEntryForm: React.FC<WorkEntryFormProps> = ({ onAddEntry }) => {
   };
 
   return (
-    <Card className="w-full glass-card animate-on-load" style={{"--delay": "1"}}>
+    <Card className="w-full glass-card animate-on-load" style={{ "--delay": "1" } as React.CSSProperties}>
       <CardHeader>
         <CardTitle className="text-xl font-medium">Add New Work Entry</CardTitle>
       </CardHeader>

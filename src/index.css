@@ -25,6 +25,7 @@
     --input: 240 5.9% 90%;
     --ring: 263 85% 50%;
     --radius: 0.75rem;
+    --delay: 0;
   }
 
   .dark {
@@ -77,5 +78,16 @@
   
   .glass-card {
     @apply bg-gradient-card backdrop-blur-sm border border-white/10;
+  }
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }

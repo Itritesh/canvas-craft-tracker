@@ -68,7 +68,7 @@ export const ChartsSection: React.FC<ChartsSectionProps> = ({ dailyData, monthly
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-      <Card className="glass-card animate-on-load" style={{"--delay": "3"}}>
+      <Card className="glass-card animate-on-load" style={{ "--delay": "3" } as React.CSSProperties}>
         <CardHeader>
           <CardTitle className="text-xl font-medium">Daily Assignments</CardTitle>
           <CardDescription>
@@ -109,7 +109,7 @@ export const ChartsSection: React.FC<ChartsSectionProps> = ({ dailyData, monthly
         </CardContent>
       </Card>
       
-      <Card className="glass-card animate-on-load" style={{"--delay": "4"}}>
+      <Card className="glass-card animate-on-load" style={{ "--delay": "4" } as React.CSSProperties}>
         <CardHeader>
           <CardTitle className="text-xl font-medium">Monthly Payments</CardTitle>
           <CardDescription>
