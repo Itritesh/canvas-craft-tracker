@@ -1,12 +1,10 @@
 
 import React, { useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
-import { Moon, Sun } from 'lucide-react';
+import { Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 export const DashboardHeader: React.FC = () => {
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   
@@ -40,32 +38,29 @@ export const DashboardHeader: React.FC = () => {
   }).format(currentTime);
   
   return (
-    <header className="w-full flex flex-col sm:flex-row justify-between items-center mb-6 animate-fade-in">
+    <header className="w-full flex flex-col sm:flex-row justify-between items-center mb-8 animate-on-load" style={{"--delay": "0"} as React.CSSProperties}>
       <div className="flex flex-col items-start">
-        <h1 className="text-3xl font-bold">
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-purple-600">
-            Designer Dashboard
+        <h1 className="text-4xl font-bold relative">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-amber-500 animate-pulse-subtle">
+            Gautam Modi Group
           </span>
+          <div className="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-purple-400 via-pink-500 to-amber-500 rounded-full"></div>
         </h1>
-        <div className="mt-1 text-muted-foreground flex flex-col sm:flex-row sm:items-center gap-1">
-          <span className="font-medium animate-pulse-subtle">{formattedDate}</span>
-          <span className="hidden sm:inline">•</span>
-          <span className="font-medium">{formattedTime}</span>
+        <div className="mt-3 text-xl font-semibold flex flex-col sm:flex-row sm:items-center gap-1">
+          <span className="font-medium animate-pulse-subtle text-amber-400">{formattedDate}</span>
+          <span className="hidden sm:inline text-white mx-2">•</span>
+          <span className="font-medium text-pink-400">{formattedTime}</span>
         </div>
       </div>
       
-      <div className="mt-4 sm:mt-0">
+      <div className="mt-4 sm:mt-0 animate-float">
         <Button
           variant="outline"
-          size="sm"
-          className={cn(
-            "rounded-full w-10 h-10 p-0 animate-scale-in",
-            theme === 'dark' ? 'bg-slate-800' : 'bg-slate-100'
-          )}
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          size="lg"
+          className="rounded-xl border-2 border-pink-500/50 bg-gradient-to-br from-purple-900/70 to-pink-800/70 hover:from-purple-800 hover:to-pink-700 transition-all duration-300"
         >
-          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-          <span className="sr-only">Toggle theme</span>
+          <Sun size={20} className="mr-2 text-amber-400" />
+          <span className="font-medium text-white">Dashboard</span>
         </Button>
       </div>
     </header>
