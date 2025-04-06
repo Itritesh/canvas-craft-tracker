@@ -1,10 +1,10 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Plus } from "lucide-react";
+import { CalendarIcon, Plus, Upload, X, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -31,8 +31,10 @@ import {
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { companies, WorkEntry } from '@/utils/dashboardUtils';
+import { ImagePreview } from './ImagePreview';
+import { toast } from "@/components/ui/use-toast";
 
-// Form schema for validation
+// Extended form schema for validation
 const formSchema = z.object({
   designerName: z.string().min(2, {
     message: "Designer name must be at least 2 characters.",
@@ -55,12 +57,15 @@ const formSchema = z.object({
 });
 
 type WorkEntryFormProps = {
-  onAddEntry: (entry: Omit<WorkEntry, 'id'>) => void;
+  onAddEntry: (entry: Omit<WorkEntry, 'id'>, projectImage?: File) => void;
 };
 
 export const WorkEntryForm: React.FC<WorkEntryFormProps> = ({ onAddEntry }) => {
   const [customCompany, setCustomCompany] = useState("");
   const [showCustomCompany, setShowCustomCompany] = useState(false);
+  const [projectImage, setProjectImage] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,14 +82,17 @@ export const WorkEntryForm: React.FC<WorkEntryFormProps> = ({ onAddEntry }) => {
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     const finalCompany = values.company === "Other" ? customCompany : values.company;
     
-    onAddEntry({
-      designerName: values.designerName,
-      workTopic: values.workTopic,
-      date: values.date,
-      company: finalCompany,
-      paymentAmount: values.paymentAmount,
-      status: values.status,
-    });
+    onAddEntry(
+      {
+        designerName: values.designerName,
+        workTopic: values.workTopic,
+        date: values.date,
+        company: finalCompany,
+        paymentAmount: values.paymentAmount,
+        status: values.status,
+      },
+      imageFile || undefined
+    );
     
     form.reset({
       designerName: "",
@@ -97,6 +105,8 @@ export const WorkEntryForm: React.FC<WorkEntryFormProps> = ({ onAddEntry }) => {
     
     setCustomCompany("");
     setShowCustomCompany(false);
+    setProjectImage(null);
+    setImageFile(null);
   };
 
   // Handle company selection with "Other" option
@@ -105,10 +115,64 @@ export const WorkEntryForm: React.FC<WorkEntryFormProps> = ({ onAddEntry }) => {
     setShowCustomCompany(value === "Other");
   };
 
+  // Handle image upload
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload an image file.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please upload an image smaller than 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setProjectImage(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+    setImageFile(file);
+  };
+
+  // Handle image removal
+  const handleRemoveImage = () => {
+    setProjectImage(null);
+    setImageFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Trigger file input click
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
     <Card className="w-full glass-card animate-on-load" style={{ "--delay": "1" } as React.CSSProperties}>
       <CardHeader>
-        <CardTitle className="text-xl font-medium">Add New Work Entry</CardTitle>
+        <CardTitle className="text-xl font-medium flex items-center">
+          <div className="mr-2 p-1.5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500">
+            <Plus className="h-5 w-5 text-white" />
+          </div>
+          Add New Work Entry
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -119,12 +183,12 @@ export const WorkEntryForm: React.FC<WorkEntryFormProps> = ({ onAddEntry }) => {
                 name="designerName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Designer Name</FormLabel>
+                    <FormLabel className="text-amber-100">Designer Name</FormLabel>
                     <FormControl>
                       <Input 
                         placeholder="Enter designer name" 
                         {...field}
-                        className="animate-hover" 
+                        className="glass-input animate-hover" 
                       />
                     </FormControl>
                     <FormMessage />
@@ -137,12 +201,12 @@ export const WorkEntryForm: React.FC<WorkEntryFormProps> = ({ onAddEntry }) => {
                 name="workTopic"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Work Topic</FormLabel>
+                    <FormLabel className="text-amber-100">Work Topic</FormLabel>
                     <FormControl>
                       <Input 
                         placeholder="e.g. Festival Poster" 
                         {...field}
-                        className="animate-hover" 
+                        className="glass-input animate-hover" 
                       />
                     </FormControl>
                     <FormMessage />
@@ -155,14 +219,14 @@ export const WorkEntryForm: React.FC<WorkEntryFormProps> = ({ onAddEntry }) => {
                 name="date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Date</FormLabel>
+                    <FormLabel className="text-amber-100">Date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-full pl-3 text-left font-normal animate-hover",
+                              "w-full pl-3 text-left font-normal glass-input animate-hover",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -195,13 +259,13 @@ export const WorkEntryForm: React.FC<WorkEntryFormProps> = ({ onAddEntry }) => {
                 name="company"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company</FormLabel>
+                    <FormLabel className="text-amber-100">Company</FormLabel>
                     <Select
                       onValueChange={handleCompanyChange}
                       value={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="animate-hover">
+                        <SelectTrigger className="glass-input animate-hover">
                           <SelectValue placeholder="Select a company" />
                         </SelectTrigger>
                       </FormControl>
@@ -220,13 +284,13 @@ export const WorkEntryForm: React.FC<WorkEntryFormProps> = ({ onAddEntry }) => {
               
               {showCustomCompany && (
                 <FormItem>
-                  <FormLabel>Custom Company Name</FormLabel>
+                  <FormLabel className="text-amber-100">Custom Company Name</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter company name"
                       value={customCompany}
                       onChange={(e) => setCustomCompany(e.target.value)}
-                      className="animate-hover"
+                      className="glass-input animate-hover"
                     />
                   </FormControl>
                 </FormItem>
@@ -237,14 +301,14 @@ export const WorkEntryForm: React.FC<WorkEntryFormProps> = ({ onAddEntry }) => {
                 name="paymentAmount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Payment Amount (₹)</FormLabel>
+                    <FormLabel className="text-amber-100">Payment Amount (₹)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         min={0}
                         placeholder="Enter amount"
                         {...field}
-                        className="animate-hover"
+                        className="glass-input animate-hover"
                       />
                     </FormControl>
                     <FormMessage />
@@ -257,13 +321,13 @@ export const WorkEntryForm: React.FC<WorkEntryFormProps> = ({ onAddEntry }) => {
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel className="text-amber-100">Status</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="animate-hover">
+                        <SelectTrigger className="glass-input animate-hover">
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>
                       </FormControl>
@@ -279,9 +343,58 @@ export const WorkEntryForm: React.FC<WorkEntryFormProps> = ({ onAddEntry }) => {
               />
             </div>
             
+            {/* Project Image Upload Section */}
+            <div className="mt-4">
+              <FormLabel className="text-amber-100 mb-2 block">Project Image</FormLabel>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div 
+                  onClick={triggerFileInput}
+                  className={`
+                    border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center gap-2 
+                    cursor-pointer transition-colors ${projectImage ? 'border-purple-500/40' : 'border-white/20 hover:border-purple-500/40'}
+                    ${projectImage ? 'bg-purple-900/20' : 'bg-white/5 hover:bg-purple-900/10'}
+                    flex-grow min-h-[150px] animate-hover
+                  `}
+                >
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    accept="image/*"
+                  />
+                  
+                  {projectImage ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Image className="h-8 w-8 text-purple-400" />
+                      <p className="text-sm text-center text-white/80">Click to change image</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2">
+                      <Upload className="h-8 w-8 text-purple-400" />
+                      <p className="text-base font-medium text-white/90">Upload Project Image</p>
+                      <p className="text-xs text-white/60">Click to browse or drag and drop</p>
+                      <p className="text-xs text-white/60">PNG, JPG, GIF (max 5MB)</p>
+                    </div>
+                  )}
+                </div>
+                
+                {projectImage && (
+                  <div className="flex-shrink-0 w-full sm:w-1/3 h-[150px] rounded-lg overflow-hidden shadow-lg animate-float">
+                    <ImagePreview 
+                      src={projectImage} 
+                      alt="Project preview" 
+                      onRemove={handleRemoveImage}
+                      className="w-full h-full"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+            
             <Button 
               type="submit" 
-              className="w-full sm:w-auto animate-hover"
+              className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 animate-hover shadow-lg"
             >
               <Plus className="mr-2 h-4 w-4" /> Add Entry
             </Button>

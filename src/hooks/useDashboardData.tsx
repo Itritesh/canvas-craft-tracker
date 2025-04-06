@@ -10,9 +10,14 @@ import {
   groupPaymentsByMonth
 } from '@/utils/dashboardUtils';
 
+// Extended WorkEntry with projectImage
+interface ExtendedWorkEntry extends WorkEntry {
+  projectImage?: string;
+}
+
 export const useDashboardData = () => {
-  const [entries, setEntries] = useState<WorkEntry[]>([]);
-  const [filteredEntries, setFilteredEntries] = useState<WorkEntry[]>([]);
+  const [entries, setEntries] = useState<ExtendedWorkEntry[]>([]);
+  const [filteredEntries, setFilteredEntries] = useState<ExtendedWorkEntry[]>([]);
   const [filter, setFilter] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [dailyAssignmentData, setDailyAssignmentData] = useState<{ date: string; count: number }[]>([]);
@@ -55,11 +60,29 @@ export const useDashboardData = () => {
   }, [filter, entries]);
   
   // Add a new work entry
-  const addEntry = (entry: Omit<WorkEntry, 'id'>) => {
-    const newEntry: WorkEntry = {
+  const addEntry = (entry: Omit<WorkEntry, 'id'>, projectImage?: File) => {
+    const newEntryBase = {
       ...entry,
       id: generateId()
     };
+    
+    let newEntry: ExtendedWorkEntry = newEntryBase;
+    
+    // Process image if provided
+    if (projectImage) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageData = event.target?.result as string;
+        
+        // Update the entry with the image data
+        setEntries(prev => 
+          prev.map(e => 
+            e.id === newEntryBase.id ? { ...e, projectImage: imageData } : e
+          )
+        );
+      };
+      reader.readAsDataURL(projectImage);
+    }
     
     setEntries(prev => [...prev, newEntry]);
     toast({
@@ -69,7 +92,7 @@ export const useDashboardData = () => {
   };
   
   // Update an existing entry
-  const updateEntry = (updatedEntry: WorkEntry) => {
+  const updateEntry = (updatedEntry: ExtendedWorkEntry) => {
     setEntries(prev => 
       prev.map(entry => 
         entry.id === updatedEntry.id ? updatedEntry : entry
