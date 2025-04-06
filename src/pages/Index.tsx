@@ -21,14 +21,22 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-      {/* Decorative elements */}
+      {/* Enhanced decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-10 left-10 w-64 h-64 rounded-full bg-blue-600/10 blur-3xl animate-pulse-subtle"></div>
         <div className="absolute top-1/3 right-10 w-80 h-80 rounded-full bg-purple-600/10 blur-3xl animate-pulse-subtle" style={{ animationDelay: "1s" }}></div>
         <div className="absolute bottom-20 left-1/4 w-72 h-72 rounded-full bg-pink-600/10 blur-3xl animate-pulse-subtle" style={{ animationDelay: "2s" }}></div>
+        <div className="absolute top-1/4 left-1/3 w-96 h-32 rounded-full bg-amber-500/5 blur-3xl animate-pulse-subtle" style={{ animationDelay: "1.5s" }}></div>
+        <div className="absolute bottom-1/3 right-1/4 w-60 h-60 rounded-full bg-cyan-500/5 blur-3xl animate-pulse-subtle" style={{ animationDelay: "2.5s" }}></div>
+        
+        {/* Animated gradient lines */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500/0 via-purple-500/30 to-pink-500/0 animate-pulse-subtle"></div>
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-pink-500/0 via-pink-500/30 to-purple-500/0 animate-pulse-subtle" style={{ animationDelay: "1s" }}></div>
+        <div className="absolute top-0 left-0 h-full w-1 bg-gradient-to-b from-purple-500/0 via-purple-500/30 to-pink-500/0 animate-pulse-subtle" style={{ animationDelay: "1.5s" }}></div>
+        <div className="absolute top-0 right-0 h-full w-1 bg-gradient-to-b from-pink-500/0 via-pink-500/30 to-purple-500/0 animate-pulse-subtle" style={{ animationDelay: "2s" }}></div>
       </div>
       
-      {/* Main content */}
+      {/* Main content with enhanced styling */}
       <div className="container mx-auto py-8 px-4 sm:px-6 relative z-10">
         <DashboardHeader />
         

@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -113,6 +112,40 @@ export default {
 					'50%': {
 						opacity: '0.8'
 					}
+				},
+				'zoom-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'scale(0.95)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'scale(1)'
+					}
+				},
+				'rotate-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'rotate(-10deg)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'rotate(0)'
+					}
+				},
+				'float-shadow': {
+					'0%': {
+						transform: 'translateY(0)',
+						boxShadow: '0 5px 15px 0px rgba(0,0,0,0.1)'
+					},
+					'50%': {
+						transform: 'translateY(-5px)',
+						boxShadow: '0 25px 15px 0px rgba(0,0,0,0.05)'
+					},
+					'100%': {
+						transform: 'translateY(0)',
+						boxShadow: '0 5px 15px 0px rgba(0,0,0,0.1)'
+					}
 				}
 			},
 			animation: {
@@ -120,11 +153,19 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.5s ease-out forwards',
 				'scale-in': 'scale-in 0.4s ease-out forwards',
-				'pulse-subtle': 'pulse-subtle 2s ease-in-out infinite'
+				'pulse-subtle': 'pulse-subtle 2s ease-in-out infinite',
+				'zoom-in': 'zoom-in 0.3s ease-out forwards',
+				'rotate-in': 'rotate-in 0.5s ease-out forwards',
+				'float-shadow': 'float-shadow 3s ease-in-out infinite'
 			},
 			backgroundImage: {
 				'gradient-dark': 'linear-gradient(to right, #1A1F2C, #2C3145)',
-				'gradient-card': 'linear-gradient(to bottom right, rgba(60, 60, 70, 0.7), rgba(30, 30, 40, 0.7))'
+				'gradient-card': 'linear-gradient(to bottom right, rgba(60, 60, 70, 0.7), rgba(30, 30, 40, 0.7))',
+				'gradient-shine': 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+			},
+			boxShadow: {
+				'glow': '0 0 10px rgba(124, 58, 237, 0.5)',
+				'inner-glow': 'inset 0 0 10px rgba(124, 58, 237, 0.2)',
 			}
 		}
 	},
